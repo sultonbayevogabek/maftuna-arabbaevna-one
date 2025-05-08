@@ -9,7 +9,7 @@
     joinButton.disabled = true;
     await statistics.onClickTgBtn();
     joinButton.disabled = false;
-    window.location.href = 'https://arabbaevna-one.netlify.app/';
+    window.location.href = 'https://t.me/+NHFUll_ZAb8yMmEy';
   })
 
   if (user && user?.name && user?.phone && user?.time) {
