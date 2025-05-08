@@ -20,12 +20,17 @@ body {
   @apply text-white font-bold h-[70px] rounded-full cursor-pointer text-2xl relative overflow-hidden shadow;
 }
 
+.tg-button {
+  background: radial-gradient(50% 50% at 50% 50%, #1E8AB5 0%, #007AAB 100%);
+  @apply flex items-center justify-center gap-3 text-white font-bold h-[70px] rounded-full cursor-pointer text-2xl relative overflow-hidden shadow;
+}
+
 .submit-button {
   background: linear-gradient(90deg, #FF3C3C 0%, #AC1414 50%, #FF3C3C 100%);
   @apply text-white font-bold h-16 rounded-full cursor-pointer text-2xl relative overflow-hidden shadow w-full;
 }
 
-.main-button::before {
+.main-button::before, .tg-button::before {
   content: '';
   position: absolute;
   top: -50%;

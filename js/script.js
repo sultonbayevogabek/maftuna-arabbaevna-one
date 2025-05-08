@@ -75,20 +75,20 @@ try {
     const phone = e.target.querySelector('#phone').value?.replace(/[^0-9]/g, '');
 
     if (!name.length) {
-      formAlert.textContent = 'Исмингизни киритинг';
+      formAlert.textContent = 'Ismingizni kiriting';
       formAlert.classList.remove('hidden');
       return;
     }
 
     if (phone?.length !== 9) {
-      formAlert.textContent = 'Телефон рақамингизни киритинг';
+      formAlert.textContent = 'Telefon raqamingizni kiriting';
       formAlert.classList.remove('hidden');
       return;
     }
 
     if (name.length && phone?.length === 9) {
       submitButton.setAttribute('disabled', true);
-      submitButton.textContent = 'Юборилмоқда...'
+      submitButton.textContent = 'Yuborilmoqda...'
 
       await statistics.onSubmitForm();
 
@@ -97,7 +97,7 @@ try {
       }))
 
       submitButton.removeAttribute('disabled');
-      submitButton.textContent = "Рўйхатдан ўтиш";
+      submitButton.textContent = "Ro'yxatdan o'tish";
       closeModal();
       window.location.href = `../telegram.html` + window.location.search;
     }
