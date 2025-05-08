@@ -1,6 +1,10 @@
 {
+  "scripts": {
+    "dev": "concurrently \"npx tailwindcss -i ./css/input.css -o ./css/styles.css --watch --minify\" \"chokidar css/styles.css -c 'node insert-css.js'\""
+  },
   "dependencies": {
     "@tailwindcss/cli": "^4.0.6",
+    "chokidar": "^4.0.3",
     "tailwindcss": "^4.0.6"
   }
 }

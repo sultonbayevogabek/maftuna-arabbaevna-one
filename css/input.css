@@ -5,18 +5,11 @@ body {
 }
 
 .custom-shadow {
-  box-shadow: 0 4px 18px 0 #00000014;
-}
-
-.bg-img {
-  background-image: url("../img/bg.webp");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+  box-shadow: 0px -4px 24px 0px #0000001F;
 }
 
 .main-button {
-  background: linear-gradient(90deg, #FF3C3C 0%, #AC1414 50%, #FF3C3C 100%);
+  background: #F00592;
   @apply text-white font-bold h-[70px] rounded-full cursor-pointer text-2xl relative overflow-hidden shadow;
 }
 
@@ -26,7 +19,7 @@ body {
 }
 
 .submit-button {
-  background: linear-gradient(90deg, #FF3C3C 0%, #AC1414 50%, #FF3C3C 100%);
+  background: #F00592;
   @apply text-white font-bold h-16 rounded-full cursor-pointer text-2xl relative overflow-hidden shadow w-full;
 }
 
