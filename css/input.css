@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+body {
+  font-family: "Inter", sans-serif;
+}
+
+.custom-shadow {
+  box-shadow: 0 4px 18px 0 #00000014;
+}
+
+.bg-img {
+  background-image: url("../img/bg.webp");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.main-button {
+  background: linear-gradient(90deg, #F1A500 0%, #D39000 52.88%, #F1A500 100%);
+  @apply text-white font-bold h-[70px] rounded-full cursor-pointer text-2xl relative overflow-hidden shadow;
+}
+
+.submit-button {
+  background: linear-gradient(90deg, #F1A500 0%, #D39000 52.88%, #F1A500 100%);
+  @apply text-white font-bold h-16 rounded-full cursor-pointer text-2xl relative overflow-hidden shadow w-full;
+}
+
+.main-button::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: rotate(45deg);
+  animation: shine 2s infinite;
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) rotate(45deg);
+  }
+}

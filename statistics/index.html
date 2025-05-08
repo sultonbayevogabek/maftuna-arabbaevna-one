@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marketing Campaign Statistics</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Marketing Campaign Statistics</h1>
+
+  <!-- Loading Indicator -->
+  <div id="loadingIndicator" class="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-white bg-opacity-80 z-50">
+    <div class="text-center">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mb-4"></div>
+      <p class="text-gray-700 font-medium">Loading data...</p>
+    </div>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+    <h2 class="text-xl font-semibold mb-4 text-gray-700">Filters</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+        <div class="flex space-x-2">
+          <div class="w-1/2">
+            <input type="datetime-local" id="dateFrom"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div class="w-1/2">
+            <input type="datetime-local" id="dateTo"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">UTM Source</label>
+        <select id="utmSourceFilter"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="all">All Sources</option>
+          <!-- Options will be populated dynamically -->
+        </select>
+      </div>
+    </div>
+    <button id="applyFilters"
+            class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+      Apply Filters
+    </button>
+    <button id="resetFilters"
+            class="mt-4 ml-2 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+      Reset Filters
+    </button>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white p-4 rounded-lg shadow-md">
+      <h3 class="text-sm font-medium text-gray-500">Total Visits</h3>
+      <p id="totalVisits" class="text-2xl font-bold text-gray-800">0</p>
+    </div>
+    <div class="bg-white p-4 rounded-lg shadow-md">
+      <h3 class="text-sm font-medium text-gray-500">Registration Button Clicks</h3>
+      <p id="regButtonClicks" class="text-2xl font-bold text-gray-800">0</p>
+    </div>
+    <div class="bg-white p-4 rounded-lg shadow-md">
+      <h3 class="text-sm font-medium text-gray-500">Form Submissions</h3>
+      <p id="formSubmissions" class="text-2xl font-bold text-gray-800">0</p>
+    </div>
+    <div class="bg-white p-4 rounded-lg shadow-md">
+      <h3 class="text-sm font-medium text-gray-500">Telegram Subscriptions</h3>
+      <p id="telegramSubs" class="text-2xl font-bold text-gray-800">0</p>
+    </div>
+  </div>
+
+  <!-- Conversion Rate Card -->
+  <div class="bg-white p-6 rounded-lg shadow-md mb-6 hidden">
+    <h2 class="text-xl font-semibold mb-4 text-gray-700">Conversion Rates</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <h3 class="text-sm font-medium text-gray-500">Visit to Registration</h3>
+        <p id="visitToReg" class="text-2xl font-bold text-gray-800">0%</p>
+      </div>
+      <div>
+        <h3 class="text-sm font-medium text-gray-500">Registration to Form</h3>
+        <p id="regToForm" class="text-2xl font-bold text-gray-800">0%</p>
+      </div>
+      <div>
+        <h3 class="text-sm font-medium text-gray-500">Sheets to Telegram</h3>
+        <p id="sheetsToTelegram" class="text-2xl font-bold text-gray-800">0%</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- UTM Source Distribution -->
+  <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+    <h2 class="text-xl font-semibold mb-4 text-gray-700">UTM Source Distribution</h2>
+    <div id="utmSourceStats" class="grid grid-cols-1 gap-4">
+      <!-- Will be populated dynamically -->
+    </div>
+  </div>
+
+  <!-- Conversion Funnel -->
+  <div class="bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-xl font-semibold mb-4 text-gray-700">Conversion Funnel</h2>
+    <div class="relative pt-1">
+      <div class="flex mb-2 items-center justify-between">
+        <div>
+          <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200">
+            Visits
+          </span>
+        </div>
+        <div class="text-right">
+          <span id="funnelVisits" class="text-xs font-semibold inline-block text-blue-600">
+            0
+          </span>
+        </div>
+      </div>
+      <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blue-200">
+        <div id="funnelVisitsBar" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500" style="width: 100%"></div>
+      </div>
+
+      <div class="flex mb-2 items-center justify-between">
+        <div>
+          <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-600 bg-green-200">
+            Registration Button
+          </span>
+        </div>
+        <div class="text-right">
+          <span id="funnelRegButton" class="text-xs font-semibold inline-block text-green-600">
+            0
+          </span>
+        </div>
+      </div>
+      <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-green-200">
+        <div id="funnelRegButtonBar" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500" style="width: 75%"></div>
+      </div>
+
+      <div class="flex mb-2 items-center justify-between">
+        <div>
+          <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-purple-600 bg-purple-200">
+            Form Submissions
+          </span>
+        </div>
+        <div class="text-right">
+          <span id="funnelFormSubmit" class="text-xs font-semibold inline-block text-purple-600">
+            0
+          </span>
+        </div>
+      </div>
+      <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-purple-200">
+        <div id="funnelFormSubmitBar" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-purple-500" style="width: 50%"></div>
+      </div>
+
+      <div class="flex mb-2 items-center justify-between">
+        <div>
+          <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-red-600 bg-red-200">
+            Telegram Subscription
+          </span>
+        </div>
+        <div class="text-right">
+          <span id="funnelTelegram" class="text-xs font-semibold inline-block text-red-600">
+            0
+          </span>
+        </div>
+      </div>
+      <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-red-200">
+        <div id="funnelTelegramBar" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-red-500" style="width: 20%"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/statistics.js"></script>
+<script>
+  const statistics = new Statistics();
+
+  statistics.getStatisticsData().then(data => {
+
+    console.log(data)
+    // Hide loading indicator
+    document.getElementById('loadingIndicator').style.display = 'none';
+
+    // Data arrays for each stage
+    const visitData = data[0] || [];
+    const regButtonData = data[1] || [];
+    const formSubmitData = data[2] || [];
+    const sheetsData = data[3] || [];
+    const telegramData = data[4] || [];
+
+    // Combine all data for processing
+    const allData = [
+      ...visitData.map(item => ({...item, stage: 'visit'})),
+      ...regButtonData.map(item => ({...item, stage: 'regButton'})),
+      ...formSubmitData.map(item => ({...item, stage: 'formSubmit'})),
+      ...sheetsData.map(item => ({...item, stage: 'sheets'})),
+      ...telegramData.map(item => ({...item, stage: 'telegram'}))
+    ];
+
+    // Extract unique UTM sources
+    const utmSources = [...new Set(allData.filter(item => item.utmSource).map(item => item.utmSource))];
+
+    // Populate UTM source filter dropdown
+    const utmSourceFilter = document.getElementById('utmSourceFilter');
+    utmSources.forEach(source => {
+      const option = document.createElement('option');
+      option.value = source;
+      option.textContent = source;
+      utmSourceFilter.appendChild(option);
+    });
+
+    // Function to filter data based on selected filters
+    function filterData() {
+      const dateFromInput = document.getElementById('dateFrom').value;
+      const dateToInput = document.getElementById('dateTo').value;
+      const utmSource = document.getElementById('utmSourceFilter').value;
+
+      return allData.filter(item => {
+        let timeMatch = true;
+
+        // Only apply date filters if both dates are provided
+        if (dateFromInput && dateToInput) {
+          const dateFrom = new Date(dateFromInput).getTime();
+          const dateTo = new Date(dateToInput).getTime();
+          timeMatch = !item.time || (item.time >= dateFrom && item.time <= dateTo);
+        }
+
+        const sourceMatch = utmSource === 'all' || item.utmSource === utmSource;
+        return timeMatch && sourceMatch;
+      });
+    }
+
+    // Function to update statistics based on filtered data
+    function updateStats() {
+      const filteredData = filterData();
+
+      // Group data by stage
+      const visitFiltered = filteredData.filter(item => item.stage === 'visit');
+      const regButtonFiltered = filteredData.filter(item => item.stage === 'regButton');
+      const formSubmitFiltered = filteredData.filter(item => item.stage === 'formSubmit');
+      const sheetsFiltered = filteredData.filter(item => item.stage === 'sheets');
+      const telegramFiltered = filteredData.filter(item => item.stage === 'telegram');
+
+      // Update summary cards
+      document.getElementById('totalVisits').textContent = visitFiltered.length;
+      document.getElementById('regButtonClicks').textContent = `${ regButtonFiltered.length } / ${ (regButtonFiltered.length / visitFiltered.length * 100).toFixed(2) }%`;
+      document.getElementById('formSubmissions').textContent = `${ formSubmitFiltered.length } / ${ (formSubmitFiltered.length / regButtonFiltered.length * 100).toFixed(2) }%`;
+      document.getElementById('telegramSubs').textContent = `${ telegramFiltered.length } / ${ (telegramFiltered.length / formSubmitFiltered.length * 100).toFixed(2) }% / ${ (telegramFiltered.length / visitFiltered.length * 100).toFixed(2) }%`;
+
+      // Calculate and update conversion rates
+      const visitToRegRate = visitFiltered.length ? (regButtonFiltered.length / visitFiltered.length * 100).toFixed(1) : '0';
+      const regToFormRate = regButtonFiltered.length ? (formSubmitFiltered.length / regButtonFiltered.length * 100).toFixed(1) : '0';
+      const sheetsToTelegramRate = sheetsFiltered.length ? (telegramFiltered.length / sheetsFiltered.length * 100).toFixed(1) : '0';
+
+      document.getElementById('visitToReg').textContent = `${visitToRegRate}%`;
+      document.getElementById('regToForm').textContent = `${regToFormRate}%`;
+      document.getElementById('sheetsToTelegram').textContent = `${sheetsToTelegramRate}%`;
+
+      // Update funnel visualization
+      updateFunnel(visitFiltered.length, regButtonFiltered.length, formSubmitFiltered.length, sheetsFiltered.length, telegramFiltered.length);
+
+      // Update UTM source distribution
+      updateUtmSourceStats(filteredData);
+    }
+
+    // Update funnel visualization
+    function updateFunnel(visits, regButton, formSubmit, sheets, telegram) {
+      // Update count labels
+      document.getElementById('funnelVisits').textContent = visits;
+      document.getElementById('funnelRegButton').textContent = regButton;
+      document.getElementById('funnelFormSubmit').textContent = formSubmit;
+      document.getElementById('funnelTelegram').textContent = telegram;
+
+      // Calculate percentages for progress bars (relative to visits)
+      const maxCount = Math.max(visits, 1); // Avoid division by zero
+
+      const regButtonPercent = (regButton / maxCount) * 100;
+      const formSubmitPercent = (formSubmit / maxCount) * 100;
+      const sheetsPercent = (sheets / maxCount) * 100;
+      const telegramPercent = (telegram / maxCount) * 100;
+
+      // Update progress bars
+      document.getElementById('funnelVisitsBar').style.width = '100%';
+      document.getElementById('funnelRegButtonBar').style.width = `${regButtonPercent}%`;
+      document.getElementById('funnelFormSubmitBar').style.width = `${formSubmitPercent}%`;
+      document.getElementById('funnelTelegramBar').style.width = `${telegramPercent}%`;
+    }
+
+    // Update UTM source distribution
+    function updateUtmSourceStats(filteredData) {
+      const utmSourceStats = document.getElementById('utmSourceStats');
+      utmSourceStats.innerHTML = '';
+
+      // Group data by UTM source
+      const sourceGroups = {};
+
+      filteredData.forEach(item => {
+        const source = item.utmSource || 'Unknown';
+        if (!sourceGroups[source]) {
+          sourceGroups[source] = {
+            total: 0,
+            visit: 0,
+            regButton: 0,
+            formSubmit: 0,
+            sheets: 0,
+            telegram: 0
+          };
+        }
+
+        sourceGroups[source].total++;
+        sourceGroups[source][item.stage]++;
+      });
+
+      // Create stats cards for each UTM source
+      Object.keys(sourceGroups).forEach(source => {
+        const stats = sourceGroups[source];
+
+        const card = document.createElement('div');
+        card.className = 'p-4 border border-gray-200 rounded-lg';
+
+        const header = document.createElement('div');
+        header.className = 'flex justify-between items-center mb-2';
+
+        const title = document.createElement('h3');
+        title.className = 'font-semibold text-lg';
+        title.textContent = source;
+
+        const total = document.createElement('span');
+        total.className = 'text-sm text-gray-500';
+        total.textContent = `Total: ${stats.total}`;
+
+        header.appendChild(title);
+        card.appendChild(header);
+
+        // Add conversion stats
+        const conversionStats = document.createElement('div');
+        conversionStats.className = 'grid grid-cols-4 gap-2';
+
+        const stages = [
+          { name: 'Visits', key: 'visit', color: 'blue' },
+          { name: 'Reg Clicks', key: 'regButton', color: 'green' },
+          { name: 'Forms', key: 'formSubmit', color: 'purple' },
+          // { name: 'Sheets', key: 'sheets', color: 'orange' },
+          { name: 'Telegram', key: 'telegram', color: 'red' }
+        ];
+
+        stages.forEach(stage => {
+          const stageDiv = document.createElement('div');
+          stageDiv.className = 'text-center';
+
+          const count = document.createElement('p');
+          count.className = `text-lg font-bold text-${stage.color}-600`;
+          count.textContent = stats[stage.key];
+
+          const label = document.createElement('p');
+          label.className = 'text-xs text-gray-500';
+          label.textContent = stage.name;
+
+          stageDiv.appendChild(count);
+          stageDiv.appendChild(label);
+          conversionStats.appendChild(stageDiv);
+        });
+
+        card.appendChild(conversionStats);
+        utmSourceStats.appendChild(card);
+      });
+
+      // If no data
+      if (Object.keys(sourceGroups).length === 0) {
+        const emptyMessage = document.createElement('p');
+        emptyMessage.className = 'text-center text-gray-500 py-4';
+        emptyMessage.textContent = 'No UTM source data available for the selected filters';
+        utmSourceStats.appendChild(emptyMessage);
+      }
+    }
+
+    // Function to reset filters
+    function resetFilters() {
+      document.getElementById('dateFrom').value = '';
+      document.getElementById('dateTo').value = '';
+      document.getElementById('utmSourceFilter').value = 'all';
+      updateStats();
+    }
+
+    // Initialize the dashboard with all data
+    updateStats();
+
+    // Add event listeners
+    document.getElementById('applyFilters').addEventListener('click', updateStats);
+    document.getElementById('resetFilters').addEventListener('click', resetFilters);
+  })
+</script>
+</body>
+</html>
