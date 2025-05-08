@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 body {
-  font-family: "Inter", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 .custom-shadow {
@@ -16,12 +16,12 @@ body {
 }
 
 .main-button {
-  background: linear-gradient(90deg, #F1A500 0%, #D39000 52.88%, #F1A500 100%);
+  background: linear-gradient(90deg, #FF3C3C 0%, #AC1414 50%, #FF3C3C 100%);
   @apply text-white font-bold h-[70px] rounded-full cursor-pointer text-2xl relative overflow-hidden shadow;
 }
 
 .submit-button {
-  background: linear-gradient(90deg, #F1A500 0%, #D39000 52.88%, #F1A500 100%);
+  background: linear-gradient(90deg, #FF3C3C 0%, #AC1414 50%, #FF3C3C 100%);
   @apply text-white font-bold h-16 rounded-full cursor-pointer text-2xl relative overflow-hidden shadow w-full;
 }
 
