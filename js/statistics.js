@@ -26,17 +26,6 @@ class Statistics {
     return new Date().getTime();
   }
 
-  getUtmParams() {
-    const queryParams = new URLSearchParams(
-      window.location.search
-    );
-    return {
-      utmSource: queryParams.get("utm_source") ?? '-',
-      utmMedium: queryParams.get("utm_medium") ?? '-',
-      utmCampaign: queryParams.get("utm_campaign") ?? '-'
-    };
-  }
-
   getUserDeviceInfo() {
     try {
       const userAgent = navigator.userAgent;
@@ -150,15 +139,12 @@ class Statistics {
 
     let response = await fetch(DB_URL, {
       method: 'POST',
-      body: JSON.stringify({
-        ...data,
-        ...this.getUtmParams(),
-        action
-      })
+      body: JSON.stringify(data)
     })
 
     response = await response.json()
     if (response && response.name) {
+      console.log(action)
       this.recordAction(action)
     }
   }
